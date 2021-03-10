@@ -23,16 +23,17 @@
 ### 离线步骤
 
 1. 利用张正友相机标定法求出相机内参，包括相机焦距和畸变系数。
-   1. 打印下图棋盘格，置于平面上，接着用相机从不同方位拍几张图片。<img src="https://github.com/Zju-George/3DReconstructionExample/raw/main/assets/checkerboard.png" alt="HMI" width="433" height="305" align="bottom" />
+   1. 打印下方棋盘格图片，尽量**平铺**于平面上，接着用相机从不同方位拍几张图片。<img src="https://github.com/Zju-George/3DReconstructionExample/raw/main/assets/checkerboard.png" alt="HMI" width="433" height="305" align="bottom" />
    
    2. 将拍的 jpg 图片放置于 `assets/` 下。
    3. 进入 `src/` 目录，执行 `python calibration.py`。
-   4. 检验结果的合理性与记录结果。在 `src/calibration.py` 中，[这行代码](https://github.com/Zju-George/3DReconstructionExample/blob/a2ab1cc6d42094d5043bbdafdee6d1865ed5240b/src/calibration.py#L44)执行相机标定求解。
+   4. 检验结果的合理性并记录。在 `src/calibration.py` 中，[这行代码](https://github.com/Zju-George/3DReconstructionExample/blob/a2ab1cc6d42094d5043bbdafdee6d1865ed5240b/src/calibration.py#L44)会执行相机标定求解。
         ```python
         ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(obj_points, img_points, size, None, None)
         ```
-        第一个返回值 `ret` 存储着相机标定的重投影误差(reprojection error)，值越小意味着标定越精确。一般来说`ret` 不该大于 2，而如果值大于 5，很大概率上述某步出错了。第二个返回值 `mtx` 是相机投影矩阵，第三个返回值 `dist` 是相机的畸变系数。
+        第一个返回值 `ret` 存储着相机标定的重投影误差(reprojection error)，值越小意味着标定越精确。一般来说`ret` 不应大于 2，而如果值大于 5，上述某步大概率做得有问题。第二个返回值 `mtx` 是相机投影矩阵，第三个返回值 `dist` 是相机的畸变系数。
    
 
-2. 准备PNP(perspective n points)算法需要的数据。PNP算法可用来求解相机外参，相机外参是相机坐标系相对于模型坐标系的变换，特别地，可分解为一个平移向量和一个旋转向量。
-   1. **固定相机位置**。(**!特别注意!**：如果相机位置改变，须重新走一遍步骤**2**)
+2. 准备PNP(perspective n points)算法需要的数据。PNP算法可用来求解相机外参，相机外参是相机坐标系相对于模型坐标系的变换。特别地，变换可分解为一个平移向量和一个旋转向量。
+   1. **固定相机位置**。(**特别注意**：如果相机位置改变，须重新走一遍步骤**2**！)
+   2. 在成像场景中放置若干(**最少4个**)可精准定位(包括三维空间的测量与图像空间的像素坐标获取)的标志点。注：因为 PNP 算法的原理是最小二乘优化，所以原则上标志点越多，相机外参计算也会越准确。
