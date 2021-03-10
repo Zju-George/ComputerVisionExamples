@@ -116,7 +116,7 @@ if __name__ == '__main__':
 
     # init data class and reconstruction class
     data = ReconstructionData(camera_matrix=camera_matrix, distortion_coeffs=distortion_coeffs, model_points=model_points, image_points=image_points)
-    image = cv2.imread('pnp.png')
+    image = cv2.imread('../assets/pnp.png')
     reconstruction = Reconstruction(data=data, image=image, draw=args.draw)
 
     target2D = np.array([252, 257], dtype='double')

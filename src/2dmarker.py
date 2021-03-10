@@ -17,7 +17,7 @@ def mouse(event, x, y, flags, param):
 if __name__ == '__main__':
     args = parser.parse_args()
 
-    img = cv2.imread(f'./{args.img}')
+    img = cv2.imread(f'../assets/{args.img}')
     cv2.namedWindow('image')
     cv2.imshow('image', img)
     cv2.setMouseCallback('image', mouse)

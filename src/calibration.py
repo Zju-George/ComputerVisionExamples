@@ -12,7 +12,7 @@ objp[:, 0:2] = np.mgrid[0:6, 0:9].T.reshape(-1, 2)  # 将世界坐标系建在�
 obj_points = []  # 存储3D点
 img_points = []  # 存储2D点
 
-images = glob.glob("./*.jpg")
+images = glob.glob("../assets/*.jpg")
 for fname in images:
     img = cv2.imread(fname)
     cv2.imshow('img',img)
