@@ -8,7 +8,7 @@
 
 如红外激光笔打到墙面上的一点，用红外摄像头成像得到灰度图 **IMAGE**。寻找 **IMAGE** 的亮斑。显然在 **IMAGE** 上，亮斑中心以及附近的像素值(亮度)会大于其他像素。利用这个性质再结合上高频噪声滤波的方法，检测到该亮斑中心像素坐标为 **(u, v)**。又已知该亮斑必然落在墙面(平面)上，利用三维重建的知识可知，该亮斑的三维坐标 **(x, y, z=0)** 有唯一解。
 
-注：检测亮斑的过程可参考[这篇教程](https://www.pyimagesearch.com/2016/10/31/detecting-multiple-bright-spots-in-an-image-with-python-and-opencv/)。
+注：检测亮斑的算法可参考[这篇教程](https://www.pyimagesearch.com/2016/10/31/detecting-multiple-bright-spots-in-an-image-with-python-and-opencv/)。
 
 ### 项目结构和环境
 
@@ -28,10 +28,10 @@
    2. 将拍的 jpg 图片放置于 `assets/` 下。
    3. 进入 `src/` 目录，执行 `python calibration.py`。
    4. 检验结果的合理性与记录结果。具体的，`src/calibration.py` 里[这句代码](https://github.com/Zju-George/3DReconstructionExample/blob/a2ab1cc6d42094d5043bbdafdee6d1865ed5240b/src/calibration.py#L44)执行相机标定求解。
-   ```python
-   ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(obj_points, img_points, size, None, None)
-   ```
-   第一个返回值 `ret` 存储着相机标定的重投影误差(reprojection error)，这个值越小越好。一般会小于 2，如果这个值大于 5，很大概率上述中间哪步出错了。第二个返回值 `mtx` 是相机投影矩阵，第三个返回值 `dist` 是相机的畸变系数(只需要前4个)。
+    ```python
+    ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(obj_points, img_points, size, None, None)
+    ```
+    第一个返回值 `ret` 存储着相机标定的重投影误差(reprojection error)，值越好代表标定越精确。`ret` 一般会小于 2，如果这个值大于 5，很大概率上述哪步出错了。第二个返回值 `mtx` 是相机投影矩阵，第三个返回值 `dist` 是相机的畸变系数。
    
 
 2. 准备PNP(perspective n points)算法需要的数据，PNP算法可以求解相机外参。相机外参是相机坐标系相对于模型坐标系的变换，特别地，可分解为一个平移向量和一个旋转向量。
