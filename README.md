@@ -23,8 +23,8 @@
 ### 离线步骤
 
 1. 利用张正友相机标定法，计算出相机内参，包括相机焦距和畸变系数。
-   1. 打印下图棋盘格，置于平面上，并用相机从不同方位拍几张图片。
-   <img src="https://github.com/Zju-George/3DReconstructionExample/raw/main/assets/checkerboard.png" alt="HMI" width="433" height="305" align="bottom" />
+   1. 打印下图棋盘格，置于平面上，并用相机从不同方位拍几张图片。<img src="https://github.com/Zju-George/3DReconstructionExample/raw/main/assets/checkerboard.png" alt="HMI" width="433" height="305" align="bottom" />
+   
    2. 将拍的 jpg 图片放置于 `assets/` 下。
-   3. 进入 `src/` 目录，执行 `python calibration.py`
+   3. 进入 `src/` 目录，执行 `python calibration.py`。
    4. 检验结果的合理性。
