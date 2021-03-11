@@ -62,7 +62,7 @@
 
 
 ### 运行时(Runtime)
-   - 运行 `python reconstruction.py`。
+   - 进入 `src/` 目录，运行 `python reconstruction.py`。
    - 循环执行下述逻辑。每次刷新 (tick)：
       1. 从摄像头那拿到当前图像。
       2. 定位到图像上要求的点(例如亮斑)的像素坐标 **(u, v)**。
