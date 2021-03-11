@@ -45,7 +45,7 @@
    4. 调用固定好的相机拍一张图像，将图像保存至 `assets/pnp.png`。
    5. 进入 `src/` 目录，执行 `python 2dmarker.py`。`2dmarker.py` 会弹出一个窗口并加载 `assets/pnp.png`。当鼠标左键点击图像上某点，会显示点击位置的像素坐标，如下图所示。我们要做的就是获取上述标识点的像素坐标。另外，如须自动保存带像素坐标的图像，可执行 `python 2dmarker.py --save`，默认是不自动保存的。
         <img src="https://github.com/Zju-George/3DReconstructionExample/raw/main/assets/2dmarker.png" alt="HMI" width="640" height="480" align="bottom" />
-3. 将第一步获得的**相机内参**和第二步的**坐标数据**填入 `reconstruction.py`。
+3. 将步骤一获得的**相机内参**和步骤二的**坐标数据**填入 `reconstruction.py`。
     ```python
         # original data to prepare 
         camera_matrix = np.array([[618.41368969, 0., 325.36183392], [0., 622.17832864, 264.46629453], [0., 0., 1.]], dtype='double')
