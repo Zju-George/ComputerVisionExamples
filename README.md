@@ -8,7 +8,7 @@
 
 例如，拿红外激光笔射一束光到墙面上，形成某光点，想通过图像知道该点的三维坐标。
 
-具体来说，记红外摄像头成像得到的灰度图为 **IMAGE**，第一步是寻找 **IMAGE** 上的亮斑。显然在 **IMAGE** 上，亮斑中心以及附近的像素值(亮度)会大于其他像素。结合此性质，再利用低通滤波来剔除高频噪声(假光斑点)。知道亮斑中心的像素坐标为 **(u, v)**，又已知该亮斑在墙面上，结合三维重建的知识可推断该亮斑的三维坐标 **(x, y, z=0)** 有且仅有唯一解。
+具体来说，记红外摄像头成像得到的灰度图为 **IMAGE**，第一步是寻找 **IMAGE** 上的亮斑。显然在 **IMAGE** 上，亮斑中心以及附近的像素值(亮度)会大于其他像素。结合此性质，再利用低通滤波来剔除高频噪声(假光斑点)。知道亮斑中心的像素坐标为 **(u, v)** 后，又已知该亮斑在墙面上，结合三维重建的知识可推断该亮斑的三维坐标 **(x, y, z=0)** 有且仅有唯一解。
 
 注：检测亮斑的算法可参考[这篇教程](https://www.pyimagesearch.com/2016/10/31/detecting-multiple-bright-spots-in-an-image-with-python-and-opencv/)。
 
@@ -41,3 +41,6 @@
    2. 在三维场景中放置若干(**最少4个**)方便精准定位(包括实地测量与像素坐标获取)的标识点。注： PNP 算法“背后”是最小二乘优化。因此，原则上标识点越多，相机外参计算也会越准确。
    3. 尽可能准确地测量标识点的三维坐标。例如下图，将三维坐标系原点设置为窗户左下角，并建立右手坐标系。测量并记录 1-6 点的三维坐标。
         <img src="https://github.com/Zju-George/3DReconstructionExample/raw/main/assets/image.jpg" alt="HMI" width="640" height="480" align="bottom" />
+   4. 调用固定好的相机拍一张图像，将图像保存至 `assets/pnp.png`。
+   5. 进入 `src/` 目录，执行 `python 2dmarker.py`。`2dmarker.py` 会弹出一个窗口并加载 `assets/pnp.png`。当鼠标左键点击图像上某点，会显示点击位置的像素坐标。我们要做的就是获取上述标识点的像素坐标，如下图所示。如果需要自动保存带像素坐标的图像，执行 `python 2dmarker.py --save`，默认是不会自动保存的。
+        <img src="https://github.com/Zju-George/3DReconstructionExample/raw/main/assets/2dmarker.png" alt="HMI" width="640" height="480" align="bottom" />
