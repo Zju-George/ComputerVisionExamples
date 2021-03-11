@@ -22,7 +22,8 @@
   - 语言：**Python>=3.6**
   - 依赖：**opencv-python==4.5.1.48**、**argparse**
   - 可以通过 `python -m pip install -r requirements.txt` 安装。
-### 离线步骤
+
+### 离线步骤(Offline steps)
 
 1. 利用张正友相机标定法求出相机内参，包括相机焦距和畸变系数。
    1. 打印下方棋盘格图片，尽量**平铺**于平面上，接着用相机从不同方位拍几张图片。<img src="https://github.com/Zju-George/3DReconstructionExample/raw/main/assets/checkerboard.png" alt="HMI" width="433" height="305" align="bottom" />
@@ -44,3 +45,25 @@
    4. 调用固定好的相机拍一张图像，将图像保存至 `assets/pnp.png`。
    5. 进入 `src/` 目录，执行 `python 2dmarker.py`。`2dmarker.py` 会弹出一个窗口并加载 `assets/pnp.png`。当鼠标左键点击图像上某点，会显示点击位置的像素坐标。我们要做的就是获取上述标识点的像素坐标，如下图所示。如果需要自动保存带像素坐标的图像，执行 `python 2dmarker.py --save`，默认是不会自动保存的。
         <img src="https://github.com/Zju-George/3DReconstructionExample/raw/main/assets/2dmarker.png" alt="HMI" width="640" height="480" align="bottom" />
+3. 将第一步获得的相机内参和第二步的坐标数据填入 `reconstruction.py`。
+        ```python
+        # original data to prepare 
+        camera_matrix = np.array([[618.41368969, 0., 325.36183392], [0., 622.17832864, 264.46629453], [0., 0., 1.]], dtype='double')
+        distortion_coeffs =  np.array([[ 3.72960294e-02, -1.56467602e-02, -3.25651528e-04, 1.03897830e-03]], dtype='double')
+        model_points = np.array([(0., 0., 0.), (1.199, 0., 0.), (0.197, 0.088, 0.467), 
+                                (0.304, 0.088, 0.467), (0.304, 0.088, 0.337), (0.197, 0.088, 0.337)])
+        image_points = np.array([(92, 395), (488, 417), (73, 444), (116, 447), (139, 423), (98, 419)], dtype='double')
+        ```
+    - `camera_matrix` 是第一步中的相机投影矩阵。
+    - `distortion_coeffs` 是第一步中的相机畸变系数。
+    - `model_points` 是第二步中标识点的三维坐标。
+    - `image_points` 是第二步中标识点的像素坐标。
+    - 特别注意：`model_points` 和 `image_points` 的点顺序要对应。
+
+
+### 运行时(Runtime)
+    - 运行 `python reconstruction.py`。
+    - 循环执行下述逻辑。
+        1. 从摄像头那拿到当前图像。
+        2. 定位到图像上要求的点(例如亮斑)的像素坐标 **(u, v)**。
+        3. 在计算后返回该点的三维坐标 **(x, y, 0)**。
