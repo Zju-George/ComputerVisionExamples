@@ -96,6 +96,7 @@ class Reconstruction(object):
                 break
         end = time.time()
         Logger.info(f'coordinate3D result: {self.coordinate3D}; loss: {self.loss}; optimization steps: {steps}; time cost: {end-start}s')
+        return self.coordinate3D
 
     def hangon(self):
         if not self.draw:
@@ -114,13 +115,14 @@ if __name__ == '__main__':
                             (0.304, 0.088, 0.467), (0.304, 0.088, 0.337), (0.197, 0.088, 0.337)])
     image_points = np.array([(92, 395), (488, 417), (73, 444), (116, 447), (139, 423), (98, 419)], dtype='double')
 
-    # init data class and reconstruction class
+    # init data and reconstruction object
     data = ReconstructionData(camera_matrix=camera_matrix, distortion_coeffs=distortion_coeffs, model_points=model_points, image_points=image_points)
     image = cv2.imread('../assets/pnp.png')
     reconstruction = Reconstruction(data=data, image=image, draw=args.draw)
 
+    # TODO: target2D should be got at runtime (on the fly)
+    # TODO: 'while True' structure here to be done
     target2D = np.array([252, 257], dtype='double')
     reconstruction.opt(target2D)
-    # optimize function
     reconstruction.hangon()
     
