@@ -95,7 +95,7 @@ class QuadDetector(object):
         return topLeft, bottomLeft, bottomRight, topRight
 
     def intersectVLINE(self, VLINE):
-        # TODO: use hLines to intersect with VLINE
+        # use hLines to intersect with VLINE
         crossPoints = []
         for line in self.hLines:
             point = GetCrossPoint(line, VLINE)
@@ -113,7 +113,7 @@ class QuadDetector(object):
         return topPoint, bottomPoint
 
     def intersectHLINE(self, HLINE):
-        # TODO: use vLines to intersect with HLINE
+        # use vLines to intersect with HLINE
         crossPoints = []
         for line in self.vLines:
             point = GetCrossPoint(line, HLINE)
