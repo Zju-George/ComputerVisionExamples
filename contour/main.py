@@ -4,15 +4,20 @@ from sklearn.cluster import KMeans
 
 from utils import *
 
+import argparse
 import warnings
 
 warnings.filterwarnings('ignore')
+parser = argparse.ArgumentParser()
+parser.add_argument('--draw', action="store_true")
+parser.add_argument('--img', type=str, default='assets/scan1.jpg')
+parser.add_argument('--savePath', type=str, default='corners.txt')
 
 
 class QuadDetector(object):
-    def __init__(self, img, show=True):
+    def __init__(self, img, draw=True):
         self.img = img
-        self.show = show
+        self.draw = draw
         self.height, self.width = self.img.shape[:2]
 
         self.VLINE1, self.VLINE2, self.HLINE1, self.HLINE2 = self.initFixedLines()
@@ -58,7 +63,7 @@ class QuadDetector(object):
                 hLines.append(line)
             else:
                 vLines.append(line)
-        if self.show:
+        if self.draw:
             cv2.imshow('contours', contourImg)
             cv2.imshow('canny edges', cannyImg)
         return vLines, hLines
@@ -78,7 +83,7 @@ class QuadDetector(object):
         bottomLeft = GetCrossPoint(bottomLine, leftLine)
         bottomRight = GetCrossPoint(bottomLine, rightLine)
 
-        if self.show:
+        if self.draw:
             self.drawPoint(top1, color=(0, 0, 255), thickness=-1)
             self.drawPoint(top2, color=(0, 0, 255), thickness=-1)
             self.drawPoint(bottom1, color=(0, 0, 255), thickness=-1)
@@ -99,7 +104,7 @@ class QuadDetector(object):
         crossPoints = []
         for line in self.hLines:
             point = GetCrossPoint(line, VLINE)
-            if self.show:
+            if self.draw:
                 self.drawPoint(point, color=(0, 255, 0))
             crossPoints.append([point.x, point.y])
         crossPoints = np.array(crossPoints)
@@ -117,7 +122,7 @@ class QuadDetector(object):
         crossPoints = []
         for line in self.vLines:
             point = GetCrossPoint(line, HLINE)
-            if self.show:
+            if self.draw:
                 self.drawPoint(point, color=(0, 255, 0))
             crossPoints.append([point.x, point.y])
         crossPoints = np.array(crossPoints)
@@ -139,7 +144,7 @@ class QuadDetector(object):
         return
 
     def hang(self):
-        if self.show:
+        if self.draw:
             for vLine in self.vLines:
                 self.drawLine(vLine)
             for hLine in self.hLines:
@@ -150,16 +155,17 @@ class QuadDetector(object):
 
 
 def main():
-    img = cv2.imread('assets/scan1.jpg')
-    # img = cv2.imread('assets/butterfly.png')
-    # img = cv2.imread('assets/scan4.jpg')
+    args = parser.parse_args()
+    img = cv2.imread(args.img)
 
-    quadDetector = QuadDetector(img)
+    quadDetector = QuadDetector(img, draw=args.draw)
     coordinates = quadDetector.getCoordinates()
     quadDetector.hang()
 
     result = '|'.join(coordinates)
-    print(result)
+    print(f'Corners coordinates: {result}')
+    with open(args.savePath, 'w') as file:
+        file.write(result)
 
 
 if __name__ == '__main__':
