@@ -10,7 +10,7 @@ import warnings
 warnings.filterwarnings('ignore')
 parser = argparse.ArgumentParser()
 parser.add_argument('--draw', action="store_true")
-parser.add_argument('--img', type=str, default='assets/scan1.jpg')
+parser.add_argument('--img', type=str, default='../assets/scan1.jpg')
 parser.add_argument('--savePath', type=str, default='corners.txt')
 
 
