@@ -22,20 +22,27 @@ class ReconstructionData(object):
 
 
 class Reconstruction(object):
-    def __init__(self, data=None, learning_rate=0.000002, thrsh=5, max_steps=100, image=None, draw=False):
+    def __init__(self, data=None, learning_rate=0.000002, thrsh=5, max_steps=100, draw=False):
         self.data = data
         self.learning_rate = learning_rate
         self.thrsh = thrsh
         self.max_steps = max_steps
-        self.image = image
         self.draw = draw
+        self.image = None
 
-        self.rotation_vector, self.translation_vector = self.solve_pnp()
+        self.rotation_vector, self.translation_vector = self.camera_extrinsics_calibration()
         self.target2D = np.zeros(2)
         self.coordinate3D = np.zeros(3)
         self.loss = 0.
         
-
+    def camera_extrinsics_calibration(self):
+        # TODO: could also try checkboard to simplify the extrinsics calibration
+        (success, rotation_vector, translation_vector) = cv2.solvePnP(self.data.model_points, 
+        self.data.image_points, self.data.camera_matrix, self.data.distortion_coeffs, flags=8)
+        # Logger.debug(f'rotation_vector:\n {rotation_vector}')
+        # Logger.debug(f'translation_vector:\n {translation_vector}')
+        return rotation_vector, translation_vector
+    
     def l2_loss(self, point1, point2):
         return (point1[0]-point2[0])**2 + (point1[1]-point2[1])**2
     
@@ -55,20 +62,17 @@ class Reconstruction(object):
 
         return np.array([grad_x, grad_y])
 
-    def solve_pnp(self):
-        (success, rotation_vector, translation_vector) = cv2.solvePnP(self.data.model_points, 
-        self.data.image_points, self.data.camera_matrix, self.data.distortion_coeffs, flags=8)
-        # Logger.debug(f'rotation_vector:\n {rotation_vector}')
-        # Logger.debug(f'translation_vector:\n {translation_vector}')
-        return rotation_vector, translation_vector
-
     def init_guess(self):
-        # TODO: bilinear interpolation to init coordinate3D, now just init as (0., 0., 0.)
+        # TODO: use bilinear interpolation to init coordinate3D. right now for simplicity just init as (0., 0., 0.)
         self.coordinate3D = np.array([0., 0., 0.])
 
         point2D, _ = cv2.projectPoints(self.coordinate3D, 
         self.rotation_vector, self.translation_vector, self.data.camera_matrix, self.data.distortion_coeffs)
-        self.loss = self.l2_loss(point2D.reshape(-1), self.target2D)
+        point2D = point2D.reshape(-1)
+        if self.draw:
+            cv2.circle(self.image, (int(point2D[0]), int(point2D[1])), 2, (0, 255, 0), thickness = 2)
+            cv2.imshow('image', self.image)
+        self.loss = self.l2_loss(point2D, self.target2D)
     
     def opt_step(self):
         grad = self.compute_grad()
@@ -84,8 +88,9 @@ class Reconstruction(object):
             cv2.imshow('image', self.image)
         return
         
-    def opt(self, target2D):
+    def opt(self, img, target2D):
         start = time.time()
+        self.image = img
         self.target2D = target2D
         self.init_guess()
         steps = 0
@@ -95,7 +100,7 @@ class Reconstruction(object):
             if self.loss < self.thrsh:
                 break
         end = time.time()
-        Logger.info(f'coordinate3D result: {self.coordinate3D}; loss: {self.loss}; optimization steps: {steps}; time cost: {end-start}s')
+        Logger.info(f'coordinate3D result: {self.coordinate3D}\n loss: {self.loss}\n optimization steps: {steps}\n time cost: {end-start}s')
         return self.coordinate3D
 
     def hangon(self):
@@ -117,12 +122,11 @@ if __name__ == '__main__':
 
     # init data and reconstruction object
     data = ReconstructionData(camera_matrix=camera_matrix, distortion_coeffs=distortion_coeffs, model_points=model_points, image_points=image_points)
-    image = cv2.imread('../assets/pnp.png')
-    reconstruction = Reconstruction(data=data, image=image, draw=args.draw)
+    reconstruction = Reconstruction(data=data, draw=args.draw)
 
-    # TODO: target2D should be got at runtime (on the fly)
+    # TODO: target2D and image should be got at RUNTIME (eg. cv2.videoCapture(0))
     # TODO: 'while True' structure here to be done
+    image = cv2.imread('../assets/pnp.png')
     target2D = np.array([252, 257], dtype='double')
-    reconstruction.opt(target2D)
+    reconstruction.opt(image, target2D)
     reconstruction.hangon()
-    
