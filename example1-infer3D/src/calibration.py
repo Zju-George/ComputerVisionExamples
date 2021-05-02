@@ -15,7 +15,7 @@ img_points = []  # 存储2D点
 images = glob.glob("../assets/*.jpg")
 for fname in images:
     img = cv2.imread(fname)
-    cv2.imshow('img',img)
+    cv2.imshow('img', img)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     size = gray.shape[::-1]
@@ -27,13 +27,12 @@ for fname in images:
         obj_points.append(objp)
 
         corners2 = cv2.cornerSubPix(gray, corners, (5, 5), (-1, -1), criteria)  # 在原角点的基础上寻找亚像素角点
-        #print(corners2)
         if [corners2]:
             img_points.append(corners2)
         else:
             img_points.append(corners)
 
-        cv2.drawChessboardCorners(img, (8, 6), corners, ret)  # 记住，OpenCV的绘制函数一般无返回值
+        cv2.drawChessboardCorners(img, (9, 6), corners, ret)  # 记住，OpenCV的绘制函数一般无返回值
         cv2.imshow('img', img)
         cv2.waitKey(500)
 
@@ -52,6 +51,3 @@ print("tvecs:\n", tvecs ) # 平移向量  # 外参数
 print("-----------------------------------------------------")
 
 # ret(reprojection error): 0.173
-
-# camera_matrix = np.array([[618.41368969, 0., 325.36183392], [0., 622.17832864, 264.46629453], [0., 0., 1.]], dtype='double')
-# distortion_coeffs =  np.array([[ 3.72960294e-02, -1.56467602e-02, -3.25651528e-04, 1.03897830e-03]], dtype='double')
